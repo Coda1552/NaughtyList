@@ -2,7 +2,7 @@ package coda.naughtylist.common.entity.util.goal;
 
 import coda.naughtylist.common.WinterRaid;
 import coda.naughtylist.common.WinterRaidSavedData;
-import coda.naughtylist.common.entity.WinterRaider;
+import coda.naughtylist.common.entity.util.WinterRaider;
 import com.google.common.collect.Sets;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.Goal;

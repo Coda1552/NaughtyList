@@ -1,13 +1,13 @@
 package coda.naughtylist.common;
 
 import coda.naughtylist.NaughtyList;
-import coda.naughtylist.common.entity.WinterRaider;
+import coda.naughtylist.common.entity.util.WinterRaider;
 import com.google.common.collect.Maps;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.advancements.CriteriaTriggers;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;

@@ -1,5 +1,6 @@
 package coda.naughtylist.common.entity;
 
+import coda.naughtylist.common.entity.util.WinterRaider;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;

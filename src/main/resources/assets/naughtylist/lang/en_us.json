@@ -1,6 +1,8 @@
 {
   "event.naughtylist.raid": "Naughty Raid",
   "event.naughtylist.raid.victory": "Victory!",
-  "event.naughtylist.raid.defeat": "Defeat"
+  "event.naughtylist.raid.defeat": "Defeat",
+
+  "entity.naughtylist.wooden_horse": "Rocking Horse"
 
 }
