@@ -1,5 +1,6 @@
 package coda.naughtylist.common;
 
+import coda.naughtylist.NaughtyList;
 import coda.naughtylist.common.entity.WinterRaider;
 import coda.naughtylist.registry.NLEntities;
 import com.google.common.collect.Maps;
@@ -60,9 +61,9 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 
 public class WinterRaid {
-    private static final Component RAID_NAME_COMPONENT = Component.translatable("event.minecraft.raid");
-    private static final Component VICTORY = Component.translatable("event.minecraft.raid.victory");
-    private static final Component DEFEAT = Component.translatable("event.minecraft.raid.defeat");
+    private static final Component RAID_NAME_COMPONENT = Component.translatable("event.naughtylist.raid");
+    private static final Component VICTORY = Component.translatable("event.naughtylist.raid.victory");
+    private static final Component DEFEAT = Component.translatable("event.naughtylist.raid.defeat");
     private static final Component RAID_BAR_VICTORY_COMPONENT = RAID_NAME_COMPONENT.copy().append(" - ").append(VICTORY);
     private static final Component RAID_BAR_DEFEAT_COMPONENT = RAID_NAME_COMPONENT.copy().append(" - ").append(DEFEAT);
     private final Map<Integer, WinterRaider> groupToLeaderMap = Maps.newHashMap();
@@ -126,10 +127,6 @@ public class WinterRaid {
         return this.isVictory() || this.isLoss();
     }
 
-    public boolean isBetweenWaves() {
-        return this.hasFirstWaveSpawned() && this.getTotalRaidersAlive() == 0 && this.raidCooldownTicks > 0;
-    }
-
     public boolean hasFirstWaveSpawned() {
         return this.groupsSpawned > 0;
     }
@@ -144,20 +141,6 @@ public class WinterRaid {
 
     public boolean isLoss() {
         return this.status == WinterRaid.RaidStatus.LOSS;
-    }
-
-    public float getTotalHealth() {
-        return this.totalHealth;
-    }
-
-    public Set<WinterRaider> getAllRaiders() {
-        Set<WinterRaider> set = Sets.newHashSet();
-
-        for(Set<WinterRaider> set1 : this.groupRaiderMap.values()) {
-            set.addAll(set1);
-        }
-
-        return set;
     }
 
     public Level getLevel() {
@@ -175,7 +158,9 @@ public class WinterRaid {
     private Predicate<ServerPlayer> validPlayer() {
         return (p_37723_) -> {
             BlockPos blockpos = p_37723_.blockPosition();
-            return p_37723_.isAlive() && this.level.getRaidAt(blockpos) == this; // todo
+
+
+            return p_37723_.isAlive() && NaughtyList.getRaidAt(level, blockpos) == this;
         };
     }
 
@@ -203,10 +188,6 @@ public class WinterRaid {
 
     public int getBadOmenLevel() {
         return this.naughtyLevel;
-    }
-
-    public void setBadOmenLevel(int p_150219_) {
-        this.naughtyLevel = p_150219_;
     }
 
     public void absorbBadOmen(Player p_37729_) {
@@ -453,8 +434,6 @@ public class WinterRaid {
     }
 
     private void playSound(BlockPos p_37744_) {
-        float f = 13.0F;
-        int i = 64;
         Collection<ServerPlayer> collection = this.raidEvent.getPlayers();
         long j = this.random.nextLong();
 
@@ -625,9 +604,7 @@ public class WinterRaid {
     }
 
     public boolean addWaveMob(int p_37719_, WinterRaider p_37720_, boolean p_37721_) {
-        this.groupRaiderMap.computeIfAbsent(p_37719_, (p_37746_) -> {
-            return Sets.newHashSet();
-        });
+        this.groupRaiderMap.computeIfAbsent(p_37719_, (p_37746_) -> Sets.newHashSet());
         Set<WinterRaider> set = this.groupRaiderMap.get(p_37719_);
         WinterRaider raider = null;
 
@@ -771,7 +748,7 @@ public class WinterRaid {
         this.heroesOfTheVillage.add(p_37727_.getUUID());
     }
 
-    static enum RaidStatus {
+    enum RaidStatus {
         ONGOING,
         VICTORY,
         LOSS,

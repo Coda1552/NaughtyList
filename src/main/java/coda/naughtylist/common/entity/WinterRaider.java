@@ -1,5 +1,6 @@
 package coda.naughtylist.common.entity;
 
+import coda.naughtylist.NaughtyList;
 import coda.naughtylist.common.WinterRaid;
 import coda.naughtylist.common.WinterRaidSavedData;
 import coda.naughtylist.common.entity.util.goal.PathfindToWinterRaidGoal;
@@ -45,7 +46,7 @@ import net.minecraft.world.phys.Vec3;
 
 public abstract class WinterRaider extends PatrollingMonster {
     protected static final EntityDataAccessor<Boolean> IS_CELEBRATING = SynchedEntityData.defineId(WinterRaider.class, EntityDataSerializers.BOOLEAN);
-    static final Predicate<ItemEntity> ALLOWED_ITEMS = (p_37872_) -> !p_37872_.hasPickUpDelay() && p_37872_.isAlive() && ItemStack.matches(p_37872_.getItem(), WinterRaidz.getLeaderBannerInstance());
+    static final Predicate<ItemEntity> ALLOWED_ITEMS = (p_37872_) -> !p_37872_.hasPickUpDelay() && p_37872_.isAlive() && ItemStack.matches(p_37872_.getItem(), WinterRaid.getLeaderBannerInstance());
     @Nullable
     protected WinterRaid raid;
     private int wave;
@@ -80,12 +81,12 @@ public abstract class WinterRaider extends PatrollingMonster {
     }
 
     public void aiStep() {
-        if (this.level instanceof ServerLevel && this.isAlive()) {
+        if (this.level instanceof ServerLevel level && this.isAlive()) {
             WinterRaid raid = this.getCurrentRaid();
             if (this.canJoinRaid()) {
                 if (raid == null) {
                     if (this.level.getGameTime() % 20L == 0L) {
-                        WinterRaid raid1 = ((ServerLevel)this.level).getRaidAt(this.blockPosition()); // todo
+                        WinterRaid raid1 = NaughtyList.getRaidAt(level, blockPosition());
                         if (raid1 != null && WinterRaidSavedData.canJoinRaid(this, raid1)) {
                             raid1.joinRaid(raid1.getGroupsSpawned(), this, (BlockPos)null, true);
                         }
@@ -205,8 +206,10 @@ public abstract class WinterRaider extends PatrollingMonster {
         this.wave = p_37862_.getInt("Wave");
         this.canJoinRaid = p_37862_.getBoolean("CanJoinRaid");
         if (p_37862_.contains("RaidId", 3)) {
-            if (this.level instanceof ServerLevel) {
-                this.raid = ((ServerLevel)this.level).getRaids().get(p_37862_.getInt("RaidId")); // todo
+            if (this.level instanceof ServerLevel level) {
+                WinterRaidSavedData raids = level.getDataStorage().computeIfAbsent(tag -> WinterRaidSavedData.load(level, tag), () -> new WinterRaidSavedData(level), WinterRaidSavedData.getFileId(level.dimensionTypeRegistration()));
+
+                this.raid = raids.get(p_37862_.getInt("RaidId"));
             }
 
             if (this.raid != null) {

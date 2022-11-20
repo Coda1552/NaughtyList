@@ -1,5 +1,6 @@
 package coda.naughtylist.common;
 
+import coda.naughtylist.NaughtyList;
 import coda.naughtylist.common.entity.WinterRaider;
 import com.google.common.collect.Maps;
 import java.util.Iterator;
@@ -136,16 +137,16 @@ public class WinterRaidSavedData extends SavedData {
       }
    }
 
-   private WinterRaid getOrCreateRaid(ServerLevel p_37961_, BlockPos p_37962_) {
-      WinterRaid raid = p_37961_.getRaidAt(p_37962_); // todo
-      return raid != null ? raid : new WinterRaid(this.getUniqueId(), p_37961_, p_37962_);
+   private WinterRaid getOrCreateRaid(ServerLevel level, BlockPos pos) {
+      WinterRaid raid = NaughtyList.getRaidAt(level, pos);
+      return raid != null ? raid : new WinterRaid(this.getUniqueId(), level, pos);
    }
 
    public static WinterRaidSavedData load(ServerLevel p_150236_, CompoundTag p_150237_) {
       WinterRaidSavedData raids = new WinterRaidSavedData(p_150236_);
       raids.nextAvailableID = p_150237_.getInt("NextAvailableID");
       raids.tick = p_150237_.getInt("Tick");
-      ListTag listtag = p_150237_.getList("Raids", 10);
+      ListTag listtag = p_150237_.getList("WinterRaidSavedData", 10);
 
       for(int i = 0; i < listtag.size(); ++i) {
          CompoundTag compoundtag = listtag.getCompound(i);
@@ -167,7 +168,7 @@ public class WinterRaidSavedData extends SavedData {
          listtag.add(compoundtag);
       }
 
-      p_37976_.put("Raids", listtag);
+      p_37976_.put("WinterRaidSavedData", listtag);
       return p_37976_;
    }
 
@@ -182,7 +183,7 @@ public class WinterRaidSavedData extends SavedData {
    @Nullable
    public WinterRaid getNearbyRaid(BlockPos p_37971_, int p_37972_) {
       WinterRaid raid = null;
-      double d0 = (double)p_37972_;
+      double d0 = p_37972_;
 
       for(WinterRaid raid1 : this.raidMap.values()) {
          double d1 = raid1.getCenter().distSqr(p_37971_);
