@@ -63,8 +63,6 @@ public class WinterRaidSavedData extends SavedData {
       if (this.tick % 200 == 0) {
          this.setDirty();
       }
-
-      //DebugPackets.sendRaids(this.level, this.raidMap.values());
    }
 
    public static boolean canJoinRaid(WinterRaider p_37966_, WinterRaid p_37967_) {
@@ -87,15 +85,13 @@ public class WinterRaidSavedData extends SavedData {
             return null;
          } else {
             BlockPos blockpos = p_37964_.blockPosition();
-            List<PoiRecord> list = this.level.getPoiManager().getInRange((p_219845_) -> {
-               return p_219845_.is(PoiTypeTags.VILLAGE);
-            }, blockpos, 64, PoiManager.Occupancy.IS_OCCUPIED).toList();
+            List<PoiRecord> list = this.level.getPoiManager().getInRange((p_219845_) -> p_219845_.is(PoiTypeTags.VILLAGE), blockpos, 64, PoiManager.Occupancy.IS_OCCUPIED).toList();
             int i = 0;
             Vec3 vec3 = Vec3.ZERO;
 
             for(PoiRecord poirecord : list) {
                BlockPos blockpos2 = poirecord.getPos();
-               vec3 = vec3.add((double)blockpos2.getX(), (double)blockpos2.getY(), (double)blockpos2.getZ());
+               vec3 = vec3.add(blockpos2.getX(), blockpos2.getY(), blockpos2.getZ());
                ++i;
             }
 
@@ -127,7 +123,6 @@ public class WinterRaidSavedData extends SavedData {
                p_37964_.connection.send(new ClientboundEntityEventPacket(p_37964_, (byte)43));
                if (!raid.hasFirstWaveSpawned()) {
                   p_37964_.awardStat(Stats.RAID_TRIGGER);
-                  CriteriaTriggers.BAD_OMEN.trigger(p_37964_);
                }
             }
 

@@ -23,6 +23,8 @@ import javax.annotation.Nullable;
 public class NaughtyList {
     public static final String MOD_ID = "naughtylist";
 
+    // todo - check if multiple naughty raids work at the same time
+    // todo - check if naughty raids AND normal raids work at the same time
     public NaughtyList() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
@@ -48,6 +50,7 @@ public class NaughtyList {
         }
     }
 
+    // todo - remove
     private void blockBroken(BlockEvent.BreakEvent e) {
         if (e.getState().is(Blocks.CRYING_OBSIDIAN) && e.getLevel() instanceof ServerLevel level && e.getPlayer() instanceof ServerPlayer player) {
             WinterRaidSavedData raids = level.getDataStorage().computeIfAbsent(tag -> WinterRaidSavedData.load(level, tag), () -> new WinterRaidSavedData(level), WinterRaidSavedData.getFileId(level.dimensionTypeRegistration()));;
