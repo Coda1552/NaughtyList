@@ -23,21 +23,23 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
+import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.PatrollingMonster;
+import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
@@ -46,7 +48,6 @@ import net.minecraft.world.phys.Vec3;
 
 public abstract class WinterRaider extends PatrollingMonster {
     protected static final EntityDataAccessor<Boolean> IS_CELEBRATING = SynchedEntityData.defineId(WinterRaider.class, EntityDataSerializers.BOOLEAN);
-    static final Predicate<ItemEntity> ALLOWED_ITEMS = (p_37872_) -> !p_37872_.hasPickUpDelay() && p_37872_.isAlive() && ItemStack.matches(p_37872_.getItem(), WinterRaid.getLeaderBannerInstance());
     @Nullable
     protected WinterRaid raid;
     private int wave;
@@ -59,10 +60,16 @@ public abstract class WinterRaider extends PatrollingMonster {
 
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(1, new WinterRaider.ObtainRaidLeaderBannerGoal<>(this));
-        this.goalSelector.addGoal(3, new PathfindToWinterRaidGoal<>(this));
-        this.goalSelector.addGoal(4, new WinterRaider.RaiderMoveThroughVillageGoal(this, 1.05F, 1));
-        this.goalSelector.addGoal(5, new WinterRaider.RaiderCelebration(this));
+        this.goalSelector.addGoal(1, new FloatGoal(this));
+        this.goalSelector.addGoal(2, new PathfindToWinterRaidGoal<>(this));
+        this.goalSelector.addGoal(3, new WinterRaider.RaiderMoveThroughVillageGoal(this, 1.05F, 1));
+        this.goalSelector.addGoal(4, new WinterRaider.RaiderCelebration(this));
+        this.goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 15.0F, 1.0F));
+        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Mob.class, 15.0F));
+        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Raider.class)).setAlertOthers());
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, false));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
     }
 
     protected void defineSynchedData() {
@@ -88,7 +95,7 @@ public abstract class WinterRaider extends PatrollingMonster {
                     if (this.level.getGameTime() % 20L == 0L) {
                         WinterRaid raid1 = NaughtyList.getRaidAt(level, blockPosition());
                         if (raid1 != null && WinterRaidSavedData.canJoinRaid(this, raid1)) {
-                            raid1.joinRaid(raid1.getGroupsSpawned(), this, (BlockPos)null, true);
+                            raid1.joinRaid(raid1.getGroupsSpawned(), this, null, true);
                         }
                     }
                 } else {
@@ -122,39 +129,7 @@ public abstract class WinterRaider extends PatrollingMonster {
 
                 raid.removeFromRaid(this, false);
             }
-
-            if (this.isPatrolLeader() && raid == null && ((ServerLevel)this.level).getRaidAt(this.blockPosition()) == null) {
-                ItemStack itemstack = this.getItemBySlot(EquipmentSlot.HEAD);
-                Player player = null;
-                if (entity instanceof Player) {
-                    player = (Player)entity;
-                } else if (entity instanceof Wolf) {
-                    Wolf wolf = (Wolf)entity;
-                    LivingEntity livingentity = wolf.getOwner();
-                    if (wolf.isTame() && livingentity instanceof Player) {
-                        player = (Player)livingentity;
-                    }
-                }
-
-                if (!itemstack.isEmpty() && ItemStack.matches(itemstack, WinterRaid.getLeaderBannerInstance()) && player != null) {
-                    MobEffectInstance mobeffectinstance1 = player.getEffect(MobEffects.BAD_OMEN);
-                    int i = 1;
-                    if (mobeffectinstance1 != null) {
-                        i += mobeffectinstance1.getAmplifier();
-                        player.removeEffectNoUpdate(MobEffects.BAD_OMEN);
-                    } else {
-                        --i;
-                    }
-
-                    i = Mth.clamp(i, 0, 4);
-                    MobEffectInstance mobeffectinstance = new MobEffectInstance(MobEffects.BAD_OMEN, 120000, i, false, false, true);
-                    if (!this.level.getGameRules().getBoolean(GameRules.RULE_DISABLE_RAIDS)) {
-                        player.addEffect(mobeffectinstance);
-                    }
-                }
-            }
         }
-
         super.die(p_37847_);
     }
 
@@ -218,29 +193,6 @@ public abstract class WinterRaider extends PatrollingMonster {
                     this.raid.setLeader(this.wave, this);
                 }
             }
-        }
-
-    }
-
-    protected void pickUpItem(ItemEntity p_37866_) {
-        ItemStack itemstack = p_37866_.getItem();
-        boolean flag = this.hasActiveRaid() && this.getCurrentRaid().getLeader(this.getWave()) != null;
-        if (this.hasActiveRaid() && !flag && ItemStack.matches(itemstack, WinterRaid.getLeaderBannerInstance())) {
-            EquipmentSlot equipmentslot = EquipmentSlot.HEAD;
-            ItemStack itemstack1 = this.getItemBySlot(equipmentslot);
-            double d0 = (double)this.getEquipmentDropChance(equipmentslot);
-            if (!itemstack1.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1F, 0.0F) < d0) {
-                this.spawnAtLocation(itemstack1);
-            }
-
-            this.onItemPickup(p_37866_);
-            this.setItemSlot(equipmentslot, itemstack);
-            this.take(p_37866_, itemstack.getCount());
-            p_37866_.discard();
-            this.getCurrentRaid().setLeader(this.getWave(), this);
-            this.setPatrolLeader(true);
-        } else {
-            super.pickUpItem(p_37866_);
         }
 
     }
@@ -335,42 +287,6 @@ public abstract class WinterRaider extends PatrollingMonster {
 
                 super.tick();
             }
-        }
-    }
-
-    public class ObtainRaidLeaderBannerGoal<T extends WinterRaider> extends Goal {
-        private final T mob;
-
-        public ObtainRaidLeaderBannerGoal(T p_37917_) {
-            this.mob = p_37917_;
-            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
-        }
-
-        public boolean canUse() {
-            WinterRaid raid = this.mob.getCurrentRaid();
-            if (this.mob.hasActiveRaid() && !this.mob.getCurrentRaid().isOver() && this.mob.canBeLeader() && !ItemStack.matches(this.mob.getItemBySlot(EquipmentSlot.HEAD), WinterRaid.getLeaderBannerInstance())) {
-                WinterRaider raider = raid.getLeader(this.mob.getWave());
-                if (raider == null || !raider.isAlive()) {
-                    List<ItemEntity> list = this.mob.level.getEntitiesOfClass(ItemEntity.class, this.mob.getBoundingBox().inflate(16.0D, 8.0D, 16.0D), WinterRaider.ALLOWED_ITEMS);
-                    if (!list.isEmpty()) {
-                        return this.mob.getNavigation().moveTo(list.get(0), (double)1.15F);
-                    }
-                }
-
-                return false;
-            } else {
-                return false;
-            }
-        }
-
-        public void tick() {
-            if (this.mob.getNavigation().getTargetPos().closerToCenterThan(this.mob.position(), 1.414D)) {
-                List<ItemEntity> list = this.mob.level.getEntitiesOfClass(ItemEntity.class, this.mob.getBoundingBox().inflate(4.0D, 4.0D, 4.0D), WinterRaider.ALLOWED_ITEMS);
-                if (!list.isEmpty()) {
-                    this.mob.pickUpItem(list.get(0));
-                }
-            }
-
         }
     }
 

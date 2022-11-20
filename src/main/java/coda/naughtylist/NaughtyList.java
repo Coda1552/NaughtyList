@@ -3,6 +3,7 @@ package coda.naughtylist;
 import coda.naughtylist.common.WinterRaid;
 import coda.naughtylist.common.WinterRaidSavedData;
 import coda.naughtylist.common.entity.Nutcracker;
+import coda.naughtylist.common.entity.WoodenHorse;
 import coda.naughtylist.registry.NLEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -38,6 +39,7 @@ public class NaughtyList {
 
     private void createAttributes(EntityAttributeCreationEvent e) {
         e.put(NLEntities.NUTCRACKER.get(), Nutcracker.createAttributes().build());
+        e.put(NLEntities.WOODEN_HORSE.get(), WoodenHorse.createAttributes().build());
     }
 
     private void levelTick(TickEvent.LevelTickEvent e) {

@@ -59,6 +59,7 @@ import net.minecraft.world.level.block.entity.BannerPatterns;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.IExtensibleEnum;
 
 public class WinterRaid {
     private static final Component RAID_NAME_COMPONENT = Component.translatable("event.naughtylist.raid");
@@ -454,11 +455,10 @@ public class WinterRaid {
         boolean flag = false;
         int i = this.groupsSpawned + 1;
         this.totalHealth = 0.0F;
-        DifficultyInstance difficultyinstance = this.level.getCurrentDifficultyAt(p_37756_);
         boolean flag1 = this.shouldSpawnBonusGroup();
 
         for(WinterRaid.RaiderType raid$raidertype : WinterRaid.RaiderType.VALUES) {
-            int j = this.getDefaultNumSpawns(raid$raidertype, i, flag1) + this.getPotentialBonusSpawns(raid$raidertype, this.random, i, difficultyinstance, flag1);
+            int j = this.getDefaultNumSpawns(raid$raidertype, i, flag1);
             int k = 0;
 
             for(int l = 0; l < j; ++l) {
@@ -549,7 +549,7 @@ public class WinterRaid {
                     this.totalHealth -= p_37741_.getHealth();
                 }
 
-                p_37741_.setCurrentRaid((WinterRaid)null);
+                p_37741_.setCurrentRaid(null);
                 this.updateBossbar();
                 this.setDirty();
             }
@@ -559,17 +559,6 @@ public class WinterRaid {
 
     private void setDirty() {
         this.level.getRaids().setDirty();
-    }
-
-    public static ItemStack getLeaderBannerInstance() {
-        ItemStack itemstack = new ItemStack(Items.WHITE_BANNER);
-        CompoundTag compoundtag = new CompoundTag();
-        ListTag listtag = (new BannerPattern.Builder()).addPattern(BannerPatterns.RHOMBUS_MIDDLE, DyeColor.CYAN).addPattern(BannerPatterns.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY).addPattern(BannerPatterns.STRIPE_CENTER, DyeColor.GRAY).addPattern(BannerPatterns.BORDER, DyeColor.LIGHT_GRAY).addPattern(BannerPatterns.STRIPE_MIDDLE, DyeColor.BLACK).addPattern(BannerPatterns.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY).addPattern(BannerPatterns.CIRCLE_MIDDLE, DyeColor.LIGHT_GRAY).addPattern(BannerPatterns.BORDER, DyeColor.BLACK).toListTag();
-        compoundtag.put("Patterns", listtag);
-        BlockItem.setBlockEntityData(itemstack, BlockEntityType.BANNER, compoundtag);
-        itemstack.hideTooltipPart(ItemStack.TooltipPart.ADDITIONAL);
-        itemstack.setHoverName(Component.translatable("block.minecraft.ominous_banner").withStyle(ChatFormatting.GOLD));
-        return itemstack;
     }
 
     @Nullable
@@ -632,8 +621,6 @@ public class WinterRaid {
 
     public void setLeader(int p_37711_, WinterRaider p_37712_) {
         this.groupToLeaderMap.put(p_37711_, p_37712_);
-        p_37712_.setItemSlot(EquipmentSlot.HEAD, getLeaderBannerInstance());
-        p_37712_.setDropChance(EquipmentSlot.HEAD, 2.0F);
     }
 
     public void removeLeader(int p_37759_) {
@@ -654,39 +641,6 @@ public class WinterRaid {
 
     private int getDefaultNumSpawns(WinterRaid.RaiderType p_37731_, int p_37732_, boolean p_37733_) {
         return p_37733_ ? p_37731_.spawnsPerWaveBeforeBonus[this.numGroups] : p_37731_.spawnsPerWaveBeforeBonus[p_37732_];
-    }
-
-    private int getPotentialBonusSpawns(WinterRaid.RaiderType p_219829_, RandomSource p_219830_, int p_219831_, DifficultyInstance p_219832_, boolean p_219833_) {
-        Difficulty difficulty = p_219832_.getDifficulty();
-        boolean flag = difficulty == Difficulty.EASY;
-        boolean flag1 = difficulty == Difficulty.NORMAL;
-        int i;
-        switch (p_219829_) {
-            case WITCH:
-                if (flag || p_219831_ <= 2 || p_219831_ == 4) {
-                    return 0;
-                }
-
-                i = 1;
-                break;
-            case PILLAGER:
-            case VINDICATOR:
-                if (flag) {
-                    i = p_219830_.nextInt(2);
-                } else if (flag1) {
-                    i = 1;
-                } else {
-                    i = 2;
-                }
-                break;
-            case RAVAGER:
-                i = !flag && p_219833_ ? 1 : 0;
-                break;
-            default:
-                return 0;
-        }
-
-        return i > 0 ? p_219830_.nextInt(i + 1) : 0;
     }
 
     public boolean isActive() {
@@ -771,12 +725,10 @@ public class WinterRaid {
         }
     }
 
-    public enum RaiderType implements net.minecraftforge.common.IExtensibleEnum {
-        VINDICATOR(NLEntities.NUTCRACKER.get(), new int[]{0, 0, 2, 0, 1, 4, 2, 5}),
-        EVOKER(NLEntities.NUTCRACKER.get(), new int[]{0, 0, 0, 0, 0, 1, 1, 2}),
-        PILLAGER(NLEntities.NUTCRACKER.get(), new int[]{0, 4, 3, 3, 4, 4, 4, 2}),
-        WITCH(NLEntities.NUTCRACKER.get(), new int[]{0, 0, 0, 0, 3, 0, 0, 1}),
-        RAVAGER(NLEntities.NUTCRACKER.get(), new int[]{0, 0, 0, 1, 0, 1, 0, 2});
+    public enum RaiderType implements IExtensibleEnum {
+        GREEN_NUTCRACKER(NLEntities.NUTCRACKER.get(), new int[]{1, 1, 2, 2, 2, 3, 2, 4}),
+        RED_NUTCRACKER(NLEntities.NUTCRACKER.get(), new int[]{1, 4, 3, 3, 4, 4, 4, 2}),
+        WOODEN_HORSE(NLEntities.NUTCRACKER.get(), new int[]{0, 1, 1, 2, 1, 2, 1, 3});
 
         static WinterRaid.RaiderType[] VALUES = values();
         final EntityType<? extends WinterRaider> entityType;
@@ -785,14 +737,6 @@ public class WinterRaid {
         RaiderType(EntityType<? extends WinterRaider> p_37821_, int[] p_37822_) {
             this.entityType = p_37821_;
             this.spawnsPerWaveBeforeBonus = p_37822_;
-        }
-
-        /**
-         * The waveCountsIn integer decides how many entities of the EntityType defined in typeIn will spawn in each wave.
-         * For example, one ravager will always spawn in wave 3.
-         */
-        public static RaiderType create(String name, EntityType<? extends WinterRaider> typeIn, int[] waveCountsIn) {
-            throw new IllegalStateException("Enum not extended");
         }
 
         @Override

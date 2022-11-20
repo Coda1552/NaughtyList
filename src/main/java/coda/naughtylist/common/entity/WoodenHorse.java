@@ -8,9 +8,9 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.level.Level;
 
-public class Nutcracker extends WinterRaider {
+public class WoodenHorse extends WinterRaider {
 
-    public Nutcracker(EntityType<? extends WinterRaider> p_37839_, Level p_37840_) {
+    public WoodenHorse(EntityType<? extends WinterRaider> p_37839_, Level p_37840_) {
         super(p_37839_, p_37840_);
     }
 
@@ -21,7 +21,7 @@ public class Nutcracker extends WinterRaider {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 20.0D).add(Attributes.ATTACK_DAMAGE, 3.0D).add(Attributes.MOVEMENT_SPEED, 0.3D);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 20.0D).add(Attributes.ATTACK_DAMAGE, 2.0D).add(Attributes.MOVEMENT_SPEED, 0.35D);
     }
 
     @Override
