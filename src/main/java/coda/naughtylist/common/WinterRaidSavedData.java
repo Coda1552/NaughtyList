@@ -173,7 +173,7 @@ public class WinterRaidSavedData extends SavedData {
    }
 
    public static String getFileId(Holder<DimensionType> p_211597_) {
-      return p_211597_.is(BuiltinDimensionTypes.END) ? "raids_end" : "raids";
+      return p_211597_.is(BuiltinDimensionTypes.END) ? "winter_raids_end" : "winter_raids";
    }
 
    private int getUniqueId() {
