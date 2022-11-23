@@ -1,6 +1,15 @@
 {
+  "itemGroup.naughtylist": "Naughty List",
+
   "event.naughtylist.raid": "Naughty Raid",
   "event.naughtylist.raid.victory": "Victory!",
-  "event.naughtylist.raid.defeat": "Defeat"
+  "event.naughtylist.raid.defeat": "Defeat",
+
+  "item.naughtylist.candy_cane": "Candy Cane",
+  "item.naughtylist.wooden_horse_spawn_egg": "Rocking Horse Spawn Egg",
+  "item.naughtylist.nutcracker_spawn_egg": "Nutcracker Spawn Egg",
+
+  "entity.naughtylist.wooden_horse": "Rocking Horse",
+  "entity.naughtylist.nutcracker": "Nutcracker"
 
 }

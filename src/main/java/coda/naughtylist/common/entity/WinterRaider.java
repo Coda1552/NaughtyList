@@ -66,7 +66,7 @@ public abstract class WinterRaider extends PatrollingMonster {
         this.goalSelector.addGoal(4, new WinterRaider.RaiderCelebration(this));
         this.goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 15.0F, 1.0F));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Mob.class, 15.0F));
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Raider.class)).setAlertOthers());
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, WinterRaider.class).setAlertOthers());
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, false));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));

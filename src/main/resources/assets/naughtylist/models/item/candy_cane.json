@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:item/handheld",
+  "loader": "forge:separate_transforms",
+  "textures": {
+    "layer0": "naughtylist:item/candy_cane"
+  },
+  "base": {
+    "parent": "naughtylist:item/candy_cane_handheld"
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "naughtylist:item/candy_cane_gui"
+    },
+    "fixed": {
+      "parent": "naughtylist:item/candy_cane_gui"
+    },
+    "ground": {
+      "parent": "naughtylist:item/candy_cane_gui"
+    }
+  }
+}
