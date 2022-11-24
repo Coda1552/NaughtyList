@@ -17,7 +17,6 @@ public class NutcrackerRenderer extends MobRenderer<Nutcracker, NutcrackerModel<
 
     public NutcrackerRenderer(EntityRendererProvider.Context p_173956_) {
         super(p_173956_, new NutcrackerModel<>(p_173956_.bakeLayer(NLModelLayers.NUTCRACKER)), 0.45F);
-        this.addLayer(new CandyCaneInHandLayer<>(this, p_173956_.getItemInHandRenderer()));
     }
 
     public ResourceLocation getTextureLocation(Nutcracker p_114029_) {

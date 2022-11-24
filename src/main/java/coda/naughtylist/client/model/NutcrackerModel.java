@@ -76,6 +76,21 @@ public class NutcrackerModel<T extends Nutcracker> extends EntityModel<T> {
 		else {
 			this.topHead.y = 13F;
 		}
+
+		if (entity.isPassenger()) {
+			this.leftLeg.xRot = -1.4137167F;
+			this.leftLeg.yRot = ((float)Math.PI / 10F);
+			this.leftLeg.zRot = 0.07853982F;
+			this.rightLeg.xRot = -1.4137167F;
+			this.rightLeg.yRot = (-(float)Math.PI / 10F);
+			this.rightLeg.zRot = -0.07853982F;
+		}
+		else {
+			this.leftLeg.yRot = 0.0F;
+			this.leftLeg.zRot = 0.0F;
+			this.rightLeg.yRot = 0.0F;
+			this.rightLeg.zRot = 0.0F;
+		}
 	}
 
 	@Override

@@ -4,12 +4,10 @@ import coda.naughtylist.NaughtyList;
 import coda.naughtylist.common.WinterRaid;
 import coda.naughtylist.common.WinterRaidSavedData;
 import coda.naughtylist.common.entity.util.goal.PathfindToWinterRaidGoal;
+import coda.naughtylist.registry.NLItems;
 import com.google.common.collect.Lists;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
+
+import java.util.*;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -18,11 +16,9 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -34,14 +30,9 @@ import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.entity.animal.Wolf;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.PatrollingMonster;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.raid.Raider;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
@@ -389,9 +380,9 @@ public abstract class WinterRaider extends PatrollingMonster {
         public void tick() {
             if (this.raider.getNavigation().isDone()) {
                 Vec3 vec3 = Vec3.atBottomCenterOf(this.poiPos);
-                Vec3 vec31 = DefaultRandomPos.getPosTowards(this.raider, 16, 7, vec3, (double)((float)Math.PI / 10F));
+                Vec3 vec31 = DefaultRandomPos.getPosTowards(this.raider, 16, 7, vec3, ((float)Math.PI / 10F));
                 if (vec31 == null) {
-                    vec31 = DefaultRandomPos.getPosTowards(this.raider, 8, 7, vec3, (double)((float)Math.PI / 2F));
+                    vec31 = DefaultRandomPos.getPosTowards(this.raider, 8, 7, vec3, ((float)Math.PI / 2F));
                 }
 
                 if (vec31 == null) {
@@ -419,6 +410,45 @@ public abstract class WinterRaider extends PatrollingMonster {
                 this.visited.remove(0);
             }
 
+        }
+    }
+
+    public static class MountHorseGoal extends Goal {
+        private final WinterRaider raider;
+
+        public MountHorseGoal(WinterRaider raider) {
+            this.raider = raider;
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        }
+
+        @Override
+        public void tick() {
+            super.tick();
+            WoodenHorse nearestHorse = raider.level.getNearestEntity(WoodenHorse.class, TargetingConditions.DEFAULT, this.raider, raider.getX(), raider.getY(), raider.getZ(), raider.getBoundingBox().inflate(20.0D));
+            moveToHorse();
+            if (nearestHorse != null && nearestHorse.distanceToSqr(raider) <= 9) {
+                raider.startRiding(nearestHorse);
+            }
+        }
+
+        private boolean isHorseNearby() {
+            WoodenHorse nearestHorse = raider.level.getNearestEntity(WoodenHorse.class, TargetingConditions.DEFAULT, this.raider, raider.getX(), raider.getY(), raider.getZ(), raider.getBoundingBox().inflate(20.0D));
+
+            return nearestHorse != null && nearestHorse.getPassengers().isEmpty();
+        }
+
+        private void moveToHorse() {
+            WoodenHorse nearestHorse = raider.level.getNearestEntity(WoodenHorse.class, TargetingConditions.DEFAULT, this.raider, raider.getX(), raider.getY(), raider.getZ(), raider.getBoundingBox().inflate(20.0D));
+
+            if (nearestHorse != null) {
+                raider.navigation.moveTo(nearestHorse, 1.0D);
+            }
+        }
+
+        public boolean canUse() {
+            WoodenHorse nearestHorse = raider.level.getNearestEntity(WoodenHorse.class, TargetingConditions.DEFAULT, this.raider, raider.getX(), raider.getY(), raider.getZ(), raider.getBoundingBox().inflate(20.0D));
+
+            return !raider.isPassenger() && !(raider instanceof WoodenHorse) && nearestHorse != null && isHorseNearby();
         }
     }
 }
