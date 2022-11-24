@@ -109,10 +109,7 @@ public class ThrownCandyCane extends AbstractArrow {
 
    protected void onHitEntity(EntityHitResult p_37573_) {
       Entity entity = p_37573_.getEntity();
-      float f = 8.0F;
-      if (entity instanceof LivingEntity livingentity) {
-         f += EnchantmentHelper.getDamageBonus(this.item, livingentity.getMobType());
-      }
+      float f = 6.0F;
 
       Entity entity1 = this.getOwner();
       DamageSource damagesource = DamageSource.trident(this, entity1 == null ? this : entity1);
@@ -123,13 +120,16 @@ public class ThrownCandyCane extends AbstractArrow {
             return;
          }
 
-         if (entity instanceof LivingEntity) {
-            LivingEntity livingentity1 = (LivingEntity)entity;
+         if (entity instanceof LivingEntity livingentity1) {
             if (entity1 instanceof LivingEntity) {
                EnchantmentHelper.doPostHurtEffects(livingentity1, entity1);
                EnchantmentHelper.doPostDamageEffects((LivingEntity)entity1, livingentity1);
             }
 
+            Vec3 vec3 = getDeltaMovement();
+            Vec3 targetVec3 = livingentity1.getDeltaMovement();
+
+            livingentity1.setDeltaMovement(new Vec3(targetVec3.x - vec3.x, targetVec3.y - vec3.y, targetVec3.z - vec3.z).multiply(0.75D, 0.5D, 0.75D));
             this.doPostHurtEffects(livingentity1);
          }
       }
