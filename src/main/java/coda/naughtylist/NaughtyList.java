@@ -3,6 +3,7 @@ package coda.naughtylist;
 import coda.naughtylist.common.WinterRaid;
 import coda.naughtylist.common.WinterRaidSavedData;
 import coda.naughtylist.common.entity.Nutcracker;
+import coda.naughtylist.common.entity.WinterRaider;
 import coda.naughtylist.common.entity.WoodenHorse;
 import coda.naughtylist.registry.NLEntities;
 import coda.naughtylist.registry.NLItems;
@@ -10,11 +11,17 @@ import coda.naughtylist.registry.NLSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
+import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -26,7 +33,6 @@ import javax.annotation.Nullable;
 public class NaughtyList {
     public static final String MOD_ID = "naughtylist";
 
-    // todo - check if multiple naughty raids work at the same time
     // todo - check if naughty raids AND normal raids work at the same time
     public NaughtyList() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -34,6 +40,7 @@ public class NaughtyList {
 
         forgeBus.addListener(this::blockBroken);
         forgeBus.addListener(this::levelTick);
+        forgeBus.addListener(this::addGoals);
         bus.addListener(this::createAttributes);
 
         NLEntities.ENTITIES.register(bus);
@@ -70,5 +77,11 @@ public class NaughtyList {
         WinterRaidSavedData raids = level.getDataStorage().computeIfAbsent(tag -> WinterRaidSavedData.load(level, tag), () -> new WinterRaidSavedData(level), WinterRaidSavedData.getFileId(level.dimensionTypeRegistration()));
 
         return raids.getNearbyRaid(pos, 9216);
+    }
+
+    private void addGoals(EntityJoinLevelEvent e) {
+        if (e.getEntity() instanceof AbstractVillager villager) {
+            villager.goalSelector.addGoal(0, new AvoidEntityGoal<>(villager, WinterRaider.class, 1.0F, 1.05D, 1.15D));
+        }
     }
 }
