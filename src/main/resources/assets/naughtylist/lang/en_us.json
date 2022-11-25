@@ -11,5 +11,10 @@
 
   "entity.naughtylist.wooden_horse": "Rocking Horse",
   "entity.naughtylist.nutcracker": "Nutcracker",
-  "entity.naughtylist.candy_cane": "Candy Cane"
+  "entity.naughtylist.candy_cane": "Candy Cane",
+
+  "naughtylist.nutcracker.ambient": "Nutcracker giggles",
+  "naughtylist.nutcracker.hurt": "Nutcracker hurts",
+  "naughtylist.nutcracker.death": "Nutcracker dies",
+  "naughtylist.nutcracker.clacking": "Wooden teeth clack"
 }

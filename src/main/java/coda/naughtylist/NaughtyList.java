@@ -6,6 +6,7 @@ import coda.naughtylist.common.entity.Nutcracker;
 import coda.naughtylist.common.entity.WoodenHorse;
 import coda.naughtylist.registry.NLEntities;
 import coda.naughtylist.registry.NLItems;
+import coda.naughtylist.registry.NLSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -37,6 +38,7 @@ public class NaughtyList {
 
         NLEntities.ENTITIES.register(bus);
         NLItems.ITEMS.register(bus);
+        NLSounds.SOUNDS.register(bus);
     }
 
     private void createAttributes(EntityAttributeCreationEvent e) {

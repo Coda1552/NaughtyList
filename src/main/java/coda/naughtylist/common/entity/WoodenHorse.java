@@ -37,6 +37,11 @@ public class WoodenHorse extends WinterRaider {
     }
 
     @Override
+    public float getStepHeight() {
+        return 1.1F;
+    }
+
+    @Override
     public double getPassengersRidingOffset() {
         return 1.2D;
     }
