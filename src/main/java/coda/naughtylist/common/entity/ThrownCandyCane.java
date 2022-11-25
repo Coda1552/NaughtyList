@@ -1,22 +1,17 @@
 package coda.naughtylist.common.entity;
 
-import javax.annotation.Nullable;
-
 import coda.naughtylist.registry.NLEntities;
 import coda.naughtylist.registry.NLItems;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -25,6 +20,8 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nullable;
 
 public class ThrownCandyCane extends AbstractArrow {
    private static final EntityDataAccessor<Byte> ID_LOYALTY = SynchedEntityData.defineId(ThrownCandyCane.class, EntityDataSerializers.BYTE);
@@ -109,7 +106,7 @@ public class ThrownCandyCane extends AbstractArrow {
 
    protected void onHitEntity(EntityHitResult p_37573_) {
       Entity entity = p_37573_.getEntity();
-      float f = 6.0F;
+      float f = 5.0F;
 
       Entity entity1 = this.getOwner();
       DamageSource damagesource = DamageSource.trident(this, entity1 == null ? this : entity1);
@@ -136,23 +133,8 @@ public class ThrownCandyCane extends AbstractArrow {
 
       this.setDeltaMovement(this.getDeltaMovement().multiply(-0.01D, -0.1D, -0.01D));
       float f1 = 1.0F;
-      if (this.level instanceof ServerLevel && this.level.isThundering() && this.isChanneling()) {
-         BlockPos blockpos = entity.blockPosition();
-         if (this.level.canSeeSky(blockpos)) {
-            LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(this.level);
-            lightningbolt.moveTo(Vec3.atBottomCenterOf(blockpos));
-            lightningbolt.setCause(entity1 instanceof ServerPlayer ? (ServerPlayer)entity1 : null);
-            this.level.addFreshEntity(lightningbolt);
-            soundevent = SoundEvents.TRIDENT_THUNDER;
-            f1 = 5.0F;
-         }
-      }
 
       this.playSound(soundevent, f1, 1.0F);
-   }
-
-   public boolean isChanneling() {
-      return EnchantmentHelper.hasChanneling(this.item);
    }
 
    protected boolean tryPickup(Player p_150196_) {

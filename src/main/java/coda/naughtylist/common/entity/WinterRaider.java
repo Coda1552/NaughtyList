@@ -4,11 +4,7 @@ import coda.naughtylist.NaughtyList;
 import coda.naughtylist.common.WinterRaid;
 import coda.naughtylist.common.WinterRaidSavedData;
 import coda.naughtylist.common.entity.util.goal.PathfindToWinterRaidGoal;
-import coda.naughtylist.registry.NLItems;
 import com.google.common.collect.Lists;
-
-import java.util.*;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -17,7 +13,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -36,6 +31,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nullable;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public abstract class WinterRaider extends PatrollingMonster {
     protected static final EntityDataAccessor<Boolean> IS_CELEBRATING = SynchedEntityData.defineId(WinterRaider.class, EntityDataSerializers.BOOLEAN);
@@ -214,7 +215,12 @@ public abstract class WinterRaider extends PatrollingMonster {
 
     @Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_37856_, DifficultyInstance p_37857_, MobSpawnType p_37858_, @Nullable SpawnGroupData p_37859_, @Nullable CompoundTag p_37860_) {
-        this.setCanJoinRaid(this.getType() != EntityType.WITCH || p_37858_ != MobSpawnType.NATURAL);
+        this.setCanJoinRaid(p_37858_ != MobSpawnType.NATURAL);
+
+        if (this.isPatrolLeader()) {
+            this.setDropChance(EquipmentSlot.HEAD, 0.0F);
+        }
+
         return super.finalizeSpawn(p_37856_, p_37857_, p_37858_, p_37859_, p_37860_);
     }
 
