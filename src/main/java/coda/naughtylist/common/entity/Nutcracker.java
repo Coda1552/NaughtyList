@@ -1,5 +1,6 @@
 package coda.naughtylist.common.entity;
 
+import coda.naughtylist.registry.NLItems;
 import coda.naughtylist.registry.NLSounds;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -8,7 +9,9 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.Nullable;
 
 public class Nutcracker extends WinterRaider {
@@ -24,8 +27,13 @@ public class Nutcracker extends WinterRaider {
         this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.0D, false));
     }
 
+    @Override
+    public ItemStack getPickedResult(HitResult target) {
+        return new ItemStack(NLItems.NUTCRACKER_SPAWN_EGG.get());
+    }
+
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 30.0D).add(Attributes.ATTACK_DAMAGE, 4.0D).add(Attributes.MOVEMENT_SPEED, 0.3D);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 20.0D).add(Attributes.ATTACK_DAMAGE, 3.0D).add(Attributes.MOVEMENT_SPEED, 0.3D);
     }
 
     @Override

@@ -2,8 +2,10 @@ package coda.naughtylist.client;
 
 import coda.naughtylist.NaughtyList;
 import coda.naughtylist.client.model.CandyCaneModel;
+import coda.naughtylist.client.model.NutcrackerGeneralModel;
 import coda.naughtylist.client.model.NutcrackerModel;
 import coda.naughtylist.client.model.WoodenHorseModel;
+import coda.naughtylist.client.renderer.NutcrackerGeneralRenderer;
 import coda.naughtylist.client.renderer.NutcrackerRenderer;
 import coda.naughtylist.client.renderer.ThrownCandyCaneRenderer;
 import coda.naughtylist.client.renderer.WoodenHorseRenderer;
@@ -22,6 +24,7 @@ public class ClientEvents {
         EntityRenderers.register(NLEntities.NUTCRACKER.get(), NutcrackerRenderer::new);
         EntityRenderers.register(NLEntities.WOODEN_HORSE.get(), WoodenHorseRenderer::new);
         EntityRenderers.register(NLEntities.CANDY_CANE.get(), ThrownCandyCaneRenderer::new);
+        EntityRenderers.register(NLEntities.NUTCRACKER_GENERAL.get(), NutcrackerGeneralRenderer::new);
     }
 
     @SubscribeEvent
@@ -29,5 +32,6 @@ public class ClientEvents {
         e.registerLayerDefinition(NLModelLayers.WOODEN_HORSE, WoodenHorseModel::createBodyLayer);
         e.registerLayerDefinition(NLModelLayers.NUTCRACKER, NutcrackerModel::createBodyLayer);
         e.registerLayerDefinition(NLModelLayers.CANDY_CANE, CandyCaneModel::createBodyLayer);
+        e.registerLayerDefinition(NLModelLayers.NUTCRACKER_GENERAL, NutcrackerGeneralModel::createBodyLayer);
     }
 }

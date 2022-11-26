@@ -1,9 +1,9 @@
 package coda.naughtylist.client.renderer.layer;
 
+import coda.naughtylist.client.model.NutcrackerGeneralModel;
+import coda.naughtylist.common.entity.NutcrackerGeneral;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
-import net.minecraft.client.model.ArmedModel;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -16,7 +16,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class CandyCaneInHandLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
+public class CandyCaneInHandLayer<T extends NutcrackerGeneral, M extends NutcrackerGeneralModel<T>> extends RenderLayer<T, M> {
     private final ItemInHandRenderer itemInHandRenderer;
 
     public CandyCaneInHandLayer(RenderLayerParent<T, M> p_234846_, ItemInHandRenderer p_234847_) {
@@ -38,18 +38,19 @@ public class CandyCaneInHandLayer<T extends LivingEntity, M extends EntityModel<
         }
     }
 
-    protected void renderArmWithItem(LivingEntity p_117185_, ItemStack p_117186_, ItemTransforms.TransformType p_117187_, HumanoidArm p_117188_, PoseStack stack, MultiBufferSource p_117190_, int p_117191_) {
-        if (!p_117186_.isEmpty()) {
+    protected void renderArmWithItem(LivingEntity entity, ItemStack itemStack, ItemTransforms.TransformType p_117187_, HumanoidArm arm, PoseStack stack, MultiBufferSource p_117190_, int p_117191_) {
+        if (!itemStack.isEmpty()) {
             stack.pushPose();
 
-            stack.translate(0, 0.55, 0.2);
+            this.getParentModel().translateToHand(arm, stack);
 
             stack.mulPose(Vector3f.XP.rotationDegrees(-125.0F));
             stack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
-            boolean flag = p_117188_ == HumanoidArm.LEFT;
-            stack.translate(0F, 0.125D, -0.625D);
+            boolean flag = arm == HumanoidArm.LEFT;
 
-           this.itemInHandRenderer.renderItem(p_117185_, p_117186_, p_117187_, flag, stack, p_117190_, p_117191_);
+            stack.translate(0.0D, 0.0D, 0.4D);
+
+           this.itemInHandRenderer.renderItem(entity, itemStack, p_117187_, flag, stack, p_117190_, p_117191_);
             stack.popPose();
         }
     }

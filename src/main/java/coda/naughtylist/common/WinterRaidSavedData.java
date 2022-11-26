@@ -3,11 +3,6 @@ package coda.naughtylist.common;
 import coda.naughtylist.NaughtyList;
 import coda.naughtylist.common.entity.WinterRaider;
 import com.google.common.collect.Maps;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
@@ -17,7 +12,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.PoiTypeTags;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiRecord;
 import net.minecraft.world.level.GameRules;
@@ -25,6 +19,11 @@ import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nullable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class WinterRaidSavedData extends SavedData {
    private final Map<Integer, WinterRaid> raidMap = Maps.newHashMap();
@@ -104,23 +103,13 @@ public class WinterRaidSavedData extends SavedData {
             }
 
             WinterRaid raid = this.getOrCreateRaid(p_37964_.getLevel(), blockpos1);
-            boolean flag = false;
             if (!raid.isStarted()) {
                if (!this.raidMap.containsKey(raid.getId())) {
                   this.raidMap.put(raid.getId(), raid);
                }
 
-               flag = true;
-            } else if (raid.getBadOmenLevel() < raid.getMaxBadOmenLevel()) {
-               flag = true;
-            } else {
-               p_37964_.removeEffect(MobEffects.BAD_OMEN);
                p_37964_.connection.send(new ClientboundEntityEventPacket(p_37964_, (byte)43));
-            }
 
-            if (flag) {
-               raid.absorbBadOmen(p_37964_);
-               p_37964_.connection.send(new ClientboundEntityEventPacket(p_37964_, (byte)43));
                if (!raid.hasFirstWaveSpawned()) {
                   p_37964_.awardStat(Stats.RAID_TRIGGER);
                }

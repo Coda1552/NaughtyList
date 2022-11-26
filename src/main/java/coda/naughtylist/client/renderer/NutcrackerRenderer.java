@@ -3,7 +3,6 @@ package coda.naughtylist.client.renderer;
 import coda.naughtylist.NaughtyList;
 import coda.naughtylist.client.NLModelLayers;
 import coda.naughtylist.client.model.NutcrackerModel;
-import coda.naughtylist.client.renderer.layer.CandyCaneInHandLayer;
 import coda.naughtylist.common.entity.Nutcracker;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;

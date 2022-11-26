@@ -3,6 +3,7 @@ package coda.naughtylist;
 import coda.naughtylist.common.WinterRaid;
 import coda.naughtylist.common.WinterRaidSavedData;
 import coda.naughtylist.common.entity.Nutcracker;
+import coda.naughtylist.common.entity.NutcrackerGeneral;
 import coda.naughtylist.common.entity.WinterRaider;
 import coda.naughtylist.common.entity.WoodenHorse;
 import coda.naughtylist.registry.NLEntities;
@@ -13,15 +14,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.npc.AbstractVillager;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -51,6 +49,7 @@ public class NaughtyList {
     private void createAttributes(EntityAttributeCreationEvent e) {
         e.put(NLEntities.NUTCRACKER.get(), Nutcracker.createAttributes().build());
         e.put(NLEntities.WOODEN_HORSE.get(), WoodenHorse.createAttributes().build());
+        e.put(NLEntities.NUTCRACKER_GENERAL.get(), NutcrackerGeneral.createAttributes().build());
     }
 
     private void levelTick(TickEvent.LevelTickEvent e) {

@@ -705,7 +705,7 @@ public class WinterRaid {
     }
 
     public enum RaiderType implements IExtensibleEnum {
-        GREEN_NUTCRACKER(NLEntities.NUTCRACKER.get(), new int[]{1, 1, 2, 2, 2, 3, 2, 4}),
+        GREEN_NUTCRACKER(NLEntities.NUTCRACKER_GENERAL.get(), new int[]{1, 1, 2, 2, 2, 3, 2, 4}),
         RED_NUTCRACKER(NLEntities.NUTCRACKER.get(), new int[]{1, 4, 3, 3, 4, 4, 4, 2}),
         WOODEN_HORSE(NLEntities.WOODEN_HORSE.get(), new int[]{0, 1, 1, 2, 1, 2, 1, 3});
 

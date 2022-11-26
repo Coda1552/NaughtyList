@@ -1,6 +1,7 @@
 package coda.naughtylist.common.entity;
 
 import coda.naughtylist.registry.NLItems;
+import coda.naughtylist.registry.NLSounds;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.sounds.SoundEvent;
@@ -9,6 +10,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -18,24 +20,52 @@ import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.HitResult;
 
 import javax.annotation.Nullable;
 
-public class EliteNutcracker extends WinterRaider implements InventoryCarrier, RangedAttackMob {
+public class NutcrackerGeneral extends WinterRaider implements InventoryCarrier, RangedAttackMob {
     private final SimpleContainer inventory = new SimpleContainer(1);
 
-    public EliteNutcracker(EntityType<? extends WinterRaider> p_37839_, Level p_37840_) {
+    public NutcrackerGeneral(EntityType<? extends WinterRaider> p_37839_, Level p_37840_) {
         super(p_37839_, p_37840_);
     }
 
     @Override
     protected void registerGoals() {
         super.registerGoals();
+        this.goalSelector.addGoal(1, new MountHorseGoal(this));
         this.goalSelector.addGoal(1, new CandyCaneAttackGoal(this, 1.0D, 40, 10.0F));
     }
 
+    @Override
+    public ItemStack getPickedResult(HitResult target) {
+        return new ItemStack(NLItems.NUTCRACKER_GENERAL_SPAWN_EGG.get());
+    }
+
+    @Override
+    public float getStepHeight() {
+        return 1.0F;
+    }
+
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 30.0D).add(Attributes.ATTACK_DAMAGE, 4.0D).add(Attributes.MOVEMENT_SPEED, 0.3D);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 30.0D).add(Attributes.ATTACK_DAMAGE, 5.0D).add(Attributes.MOVEMENT_SPEED, 0.28D);
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource p_33034_) {
+        return NLSounds.NUTCRACKER_HURT.get();
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return isAggressive() ? null : NLSounds.NUTCRACKER_AMBIENT.get();
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return NLSounds.NUTCRACKER_DEATH.get();
     }
 
     @Override
@@ -106,11 +136,11 @@ public class EliteNutcracker extends WinterRaider implements InventoryCarrier, R
     }
 
     static class CandyCaneAttackGoal extends RangedAttackGoal {
-        private final EliteNutcracker nutcracker;
+        private final NutcrackerGeneral nutcracker;
 
         public CandyCaneAttackGoal(RangedAttackMob p_32450_, double p_32451_, int p_32452_, float p_32453_) {
             super(p_32450_, p_32451_, p_32452_, p_32453_);
-            this.nutcracker = (EliteNutcracker)p_32450_;
+            this.nutcracker = (NutcrackerGeneral)p_32450_;
         }
 
         public boolean canUse() {
