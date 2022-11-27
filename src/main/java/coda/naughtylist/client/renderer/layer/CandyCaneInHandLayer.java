@@ -24,17 +24,20 @@ public class CandyCaneInHandLayer<T extends NutcrackerGeneral, M extends Nutcrac
         this.itemInHandRenderer = p_234847_;
     }
 
-    public void render(PoseStack p_117204_, MultiBufferSource p_117205_, int p_117206_, T p_117207_, float p_117208_, float p_117209_, float p_117210_, float p_117211_, float p_117212_, float p_117213_) {
-        boolean flag = p_117207_.getMainArm() == HumanoidArm.RIGHT;
-        ItemStack itemstack = flag ? p_117207_.getOffhandItem() : p_117207_.getMainHandItem();
-        ItemStack itemstack1 = flag ? p_117207_.getMainHandItem() : p_117207_.getOffhandItem();
+    public void render(PoseStack p_117204_, MultiBufferSource p_117205_, int p_117206_, T enttiy, float p_117208_, float p_117209_, float p_117210_, float p_117211_, float p_117212_, float p_117213_) {
+        if (enttiy.isAggressive()) {
 
-        if (!itemstack.isEmpty() || !itemstack1.isEmpty()) {
-            p_117204_.pushPose();
+            boolean flag = enttiy.getMainArm() == HumanoidArm.RIGHT;
+            ItemStack itemstack = flag ? enttiy.getOffhandItem() : enttiy.getMainHandItem();
+            ItemStack itemstack1 = flag ? enttiy.getMainHandItem() : enttiy.getOffhandItem();
 
-            this.renderArmWithItem(p_117207_, itemstack1, ItemTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, HumanoidArm.RIGHT, p_117204_, p_117205_, p_117206_);
-            this.renderArmWithItem(p_117207_, itemstack, ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND, HumanoidArm.LEFT, p_117204_, p_117205_, p_117206_);
-            p_117204_.popPose();
+            if (!itemstack.isEmpty() || !itemstack1.isEmpty()) {
+                p_117204_.pushPose();
+
+                this.renderArmWithItem(enttiy, itemstack1, ItemTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, HumanoidArm.RIGHT, p_117204_, p_117205_, p_117206_);
+                this.renderArmWithItem(enttiy, itemstack, ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND, HumanoidArm.LEFT, p_117204_, p_117205_, p_117206_);
+                p_117204_.popPose();
+            }
         }
     }
 
@@ -42,15 +45,17 @@ public class CandyCaneInHandLayer<T extends NutcrackerGeneral, M extends Nutcrac
         if (!itemStack.isEmpty()) {
             stack.pushPose();
 
-            this.getParentModel().translateToHand(arm, stack);
-
-            stack.mulPose(Vector3f.XP.rotationDegrees(-125.0F));
-            stack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
             boolean flag = arm == HumanoidArm.LEFT;
+            this.getParentModel().translateToHand(arm, stack);
+            float f = !flag ? 0.225F : -0.225F;
 
-            stack.translate(0.0D, 0.0D, 0.4D);
+            //stack.translate(0.525D, 1.15D, 0.4D);
+            stack.translate(f, 0.85D, 0.0D);
+            stack.mulPose(Vector3f.XP.rotationDegrees(-90.0F));
+            stack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
 
-           this.itemInHandRenderer.renderItem(entity, itemStack, p_117187_, flag, stack, p_117190_, p_117191_);
+
+            this.itemInHandRenderer.renderItem(entity, itemStack, p_117187_, flag, stack, p_117190_, p_117191_);
             stack.popPose();
         }
     }

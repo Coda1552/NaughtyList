@@ -3,7 +3,6 @@ package coda.naughtylist.client.model;
 import coda.naughtylist.common.entity.NutcrackerGeneral;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -69,8 +68,20 @@ public class NutcrackerGeneralModel<T extends NutcrackerGeneral> extends EntityM
 	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		//AnimationUtils.animateZombieArms(this.lArm, this.rArm, true, this.attackTime, ageInTicks);
 
-		this.rArm.visible = true;
-		this.lArm.visible = true;
+		if (entity.isAggressive()) {
+			this.armsTucked.visible = false;
+			this.lArm.visible = true;
+			this.rArm.visible = true;
+
+			this.lArm.xRot = Mth.cos(limbSwing * 0.6F) * 1.4F * limbSwingAmount * 0.5F;
+			this.rArm.xRot = Mth.cos(limbSwing * 0.6F + (float)Math.PI) * 1.4F * limbSwingAmount * 0.5F;
+		}
+		else {
+			this.lArm.visible = false;
+			this.rArm.visible = false;
+
+			this.armsTucked.visible = true;
+		}
 
 		this.rLeg.xRot = Mth.cos(limbSwing * 0.6F) * 1.4F * limbSwingAmount * 0.5F;
 		this.lLeg.xRot = Mth.cos(limbSwing * 0.6F + (float)Math.PI) * 1.4F * limbSwingAmount * 0.5F;
@@ -85,16 +96,14 @@ public class NutcrackerGeneralModel<T extends NutcrackerGeneral> extends EntityM
 	}
 
 	@Override
-	public void translateToHand(HumanoidArm p_102108_, PoseStack p_102109_) {
-		float f = p_102108_ == HumanoidArm.RIGHT ? 2.5F : -2.5F;
+	public void translateToHand(HumanoidArm p_102108_, PoseStack stack) {
+		float f = p_102108_ == HumanoidArm.LEFT ? 2.5F : -2.5F;
+
 		ModelPart modelpart = this.getArm(p_102108_);
-
-		p_102109_.translate(0.0D, 0.15D, -1.15D);
-		p_102109_.mulPose(Vector3f.XP.rotationDegrees(32.0F));
-
 		modelpart.x += f;
-		modelpart.translateAndRotate(p_102109_);
+		modelpart.translateAndRotate(stack);
 		modelpart.x -= f;
+
 	}
 
 	protected ModelPart getArm(HumanoidArm p_102852_) {
