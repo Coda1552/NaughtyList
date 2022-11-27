@@ -29,7 +29,6 @@ import net.minecraft.world.entity.monster.PatrollingMonster;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
@@ -220,7 +219,7 @@ public abstract class WinterRaider extends PatrollingMonster {
         this.setCanJoinRaid(p_37858_ != MobSpawnType.NATURAL);
 
         if (this.isPatrolLeader()) {
-            this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.AIR));
+            this.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
             this.setDropChance(EquipmentSlot.HEAD, 0.0F);
         }
 
