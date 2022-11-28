@@ -1,0 +1,50 @@
+{
+  "nutcracker.clacking": {
+    "subtitle": "naughtylist.nutcracker.clacking",
+    "sounds": [
+      {
+        "name": "naughtylist:nutcracker/clacking1",
+        "stream": true
+      },
+      {
+        "name": "naughtylist:nutcracker/clacking2",
+        "stream": true
+      },
+      {
+        "name": "naughtylist:nutcracker/clacking3",
+        "stream": true
+      },
+      {
+        "name": "naughtylist:nutcracker/clacking4",
+        "stream": true
+      }
+    ]
+  },
+  "nutcracker.ambient": {
+    "subtitle": "naughtylist.nutcracker.ambient",
+    "sounds": [
+      {
+        "name": "naughtylist:nutcracker/ambient",
+        "stream": true
+      }
+    ]
+  },
+  "nutcracker.death": {
+    "subtitle": "naughtylist.nutcracker.death",
+    "sounds": [
+      {
+        "name": "naughtylist:nutcracker/death",
+        "stream": true
+      }
+    ]
+  },
+  "nutcracker.hurt": {
+    "subtitle": "naughtylist.nutcracker.hurt",
+    "sounds": [
+      {
+        "name": "naughtylist:nutcracker/hurt",
+        "stream": true
+      }
+    ]
+  }
+}

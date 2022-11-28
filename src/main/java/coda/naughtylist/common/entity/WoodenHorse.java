@@ -1,9 +1,9 @@
 package coda.naughtylist.common.entity;
 
-import coda.naughtylist.common.entity.util.WinterRaider;
+import coda.naughtylist.registry.NLEntities;
+import coda.naughtylist.registry.NLItems;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -12,14 +12,13 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.Nullable;
 
 public class WoodenHorse extends WinterRaider {
-    public float xBodyRot;
-    public float xBodyRotO;
 
     public WoodenHorse(EntityType<? extends WinterRaider> p_37839_, Level p_37840_) {
         super(p_37839_, p_37840_);
@@ -35,32 +34,15 @@ public class WoodenHorse extends WinterRaider {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 20.0D).add(Attributes.ATTACK_DAMAGE, 2.0D).add(Attributes.MOVEMENT_SPEED, 0.35D);
     }
 
+
     @Override
-    public void aiStep() {
-        super.aiStep();
-
-        this.xBodyRotO = this.xBodyRot;
-
-        Vec3 vec3 = this.getDeltaMovement();
-        double d0 = vec3.horizontalDistance();
-
-        if (!isInWater()) {
-            this.xBodyRot += (-((float)Mth.atan2(d0, vec3.y)) * (180F / (float)Math.PI) - this.xBodyRot) * 0.1F;
-        }
-        else {
-            this.xBodyRot += (180.0F - this.xBodyRot) * 0.02F;
-        }
-    }
-
-    @Nullable
-    @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_37856_, DifficultyInstance p_37857_, MobSpawnType p_37858_, @Nullable SpawnGroupData p_37859_, @Nullable CompoundTag p_37860_) {
-        return p_37859_;
+    public ItemStack getPickedResult(HitResult target) {
+        return new ItemStack(NLItems.WOODEN_HORSE_SPAWN_EGG.get());
     }
 
     @Override
-    public boolean canBeLeader() {
-        return false;
+    public void applyRaidBuffs(int p_37844_, boolean p_37845_) {
+
     }
 
     @Override
@@ -69,8 +51,26 @@ public class WoodenHorse extends WinterRaider {
     }
 
     @Override
-    public void applyRaidBuffs(int p_37844_, boolean p_37845_) {
+    public double getPassengersRidingOffset() {
+        return 1.2D;
+    }
 
+    @Nullable
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_37856_, DifficultyInstance p_37857_, MobSpawnType p_37858_, @Nullable SpawnGroupData p_37859_, @Nullable CompoundTag p_37860_) {
+        if (random.nextBoolean()) {
+            Nutcracker nutcracker = NLEntities.NUTCRACKER.get().create(level);
+
+            if (nutcracker != null) {
+
+                nutcracker.startRiding(this, true);
+                nutcracker.moveTo(position());
+
+                level.addFreshEntity(nutcracker);
+            }
+        }
+
+        return super.finalizeSpawn(p_37856_, p_37857_, p_37858_, p_37859_, p_37860_);
     }
 
     @Override

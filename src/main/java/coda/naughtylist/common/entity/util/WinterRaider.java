@@ -1,15 +1,10 @@
-package coda.naughtylist.common.entity.util;
+package coda.naughtylist.common.entity;
 
 import coda.naughtylist.NaughtyList;
 import coda.naughtylist.common.WinterRaid;
 import coda.naughtylist.common.WinterRaidSavedData;
 import coda.naughtylist.common.entity.util.goal.PathfindToWinterRaidGoal;
 import com.google.common.collect.Lists;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -33,10 +28,16 @@ import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.monster.PatrollingMonster;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.raid.Raider;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nullable;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public abstract class WinterRaider extends PatrollingMonster {
     protected static final EntityDataAccessor<Boolean> IS_CELEBRATING = SynchedEntityData.defineId(WinterRaider.class, EntityDataSerializers.BOOLEAN);
@@ -58,10 +59,10 @@ public abstract class WinterRaider extends PatrollingMonster {
         this.goalSelector.addGoal(4, new WinterRaider.RaiderCelebration(this));
         this.goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 15.0F, 1.0F));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Mob.class, 15.0F));
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, Raider.class)).setAlertOthers());
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, false));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, WinterRaider.class).setAlertOthers());
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, false));
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
     }
 
     protected void defineSynchedData() {
@@ -215,72 +216,17 @@ public abstract class WinterRaider extends PatrollingMonster {
 
     @Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor p_37856_, DifficultyInstance p_37857_, MobSpawnType p_37858_, @Nullable SpawnGroupData p_37859_, @Nullable CompoundTag p_37860_) {
-        this.setCanJoinRaid(this.getType() != EntityType.WITCH || p_37858_ != MobSpawnType.NATURAL);
+        this.setCanJoinRaid(p_37858_ != MobSpawnType.NATURAL);
+
+        if (this.isPatrolLeader()) {
+            this.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
+            this.setDropChance(EquipmentSlot.HEAD, 0.0F);
+        }
+
         return super.finalizeSpawn(p_37856_, p_37857_, p_37858_, p_37859_, p_37860_);
     }
 
     public abstract SoundEvent getCelebrateSound();
-
-    protected static class HoldGroundAttackGoal extends Goal {
-        private final WinterRaider mob;
-        private final float hostileRadiusSqr;
-        public final TargetingConditions shoutTargeting = TargetingConditions.forNonCombat().range(8.0D).ignoreLineOfSight().ignoreInvisibilityTesting();
-
-        public HoldGroundAttackGoal(WinterRaider p_37907_, float p_37908_) {
-            this.mob = p_37907_;
-            this.hostileRadiusSqr = p_37908_ * p_37908_;
-            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
-        }
-
-        public boolean canUse() {
-            LivingEntity livingentity = this.mob.getLastHurtByMob();
-            return this.mob.getCurrentRaid() == null && this.mob.isPatrolling() && this.mob.getTarget() != null && !this.mob.isAggressive() && (livingentity == null || livingentity.getType() != EntityType.PLAYER);
-        }
-
-        public void start() {
-            super.start();
-            this.mob.getNavigation().stop();
-
-            for(WinterRaider raider : this.mob.level.getNearbyEntities(WinterRaider.class, this.shoutTargeting, this.mob, this.mob.getBoundingBox().inflate(8.0D, 8.0D, 8.0D))) {
-                raider.setTarget(this.mob.getTarget());
-            }
-
-        }
-
-        public void stop() {
-            super.stop();
-            LivingEntity livingentity = this.mob.getTarget();
-            if (livingentity != null) {
-                for(WinterRaider raider : this.mob.level.getNearbyEntities(WinterRaider.class, this.shoutTargeting, this.mob, this.mob.getBoundingBox().inflate(8.0D, 8.0D, 8.0D))) {
-                    raider.setTarget(livingentity);
-                    raider.setAggressive(true);
-                }
-
-                this.mob.setAggressive(true);
-            }
-
-        }
-
-        public boolean requiresUpdateEveryTick() {
-            return true;
-        }
-
-        public void tick() {
-            LivingEntity livingentity = this.mob.getTarget();
-            if (livingentity != null) {
-                if (this.mob.distanceToSqr(livingentity) > (double)this.hostileRadiusSqr) {
-                    this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
-                    if (this.mob.random.nextInt(50) == 0) {
-                        this.mob.playAmbientSound();
-                    }
-                } else {
-                    this.mob.setAggressive(true);
-                }
-
-                super.tick();
-            }
-        }
-    }
 
     public class RaiderCelebration extends Goal {
         private final WinterRaider mob;
@@ -381,9 +327,9 @@ public abstract class WinterRaider extends PatrollingMonster {
         public void tick() {
             if (this.raider.getNavigation().isDone()) {
                 Vec3 vec3 = Vec3.atBottomCenterOf(this.poiPos);
-                Vec3 vec31 = DefaultRandomPos.getPosTowards(this.raider, 16, 7, vec3, (double)((float)Math.PI / 10F));
+                Vec3 vec31 = DefaultRandomPos.getPosTowards(this.raider, 16, 7, vec3, ((float)Math.PI / 10F));
                 if (vec31 == null) {
-                    vec31 = DefaultRandomPos.getPosTowards(this.raider, 8, 7, vec3, (double)((float)Math.PI / 2F));
+                    vec31 = DefaultRandomPos.getPosTowards(this.raider, 8, 7, vec3, ((float)Math.PI / 2F));
                 }
 
                 if (vec31 == null) {
@@ -411,6 +357,45 @@ public abstract class WinterRaider extends PatrollingMonster {
                 this.visited.remove(0);
             }
 
+        }
+    }
+
+    public static class MountHorseGoal extends Goal {
+        private final WinterRaider raider;
+
+        public MountHorseGoal(WinterRaider raider) {
+            this.raider = raider;
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        }
+
+        @Override
+        public void tick() {
+            super.tick();
+            WoodenHorse nearestHorse = raider.level.getNearestEntity(WoodenHorse.class, TargetingConditions.DEFAULT, this.raider, raider.getX(), raider.getY(), raider.getZ(), raider.getBoundingBox().inflate(20.0D));
+            moveToHorse();
+            if (nearestHorse != null && nearestHorse.distanceToSqr(raider) <= 9) {
+                raider.startRiding(nearestHorse);
+            }
+        }
+
+        private boolean isHorseNearby() {
+            WoodenHorse nearestHorse = raider.level.getNearestEntity(WoodenHorse.class, TargetingConditions.DEFAULT, this.raider, raider.getX(), raider.getY(), raider.getZ(), raider.getBoundingBox().inflate(20.0D));
+
+            return nearestHorse != null && nearestHorse.getPassengers().isEmpty();
+        }
+
+        private void moveToHorse() {
+            WoodenHorse nearestHorse = raider.level.getNearestEntity(WoodenHorse.class, TargetingConditions.DEFAULT, this.raider, raider.getX(), raider.getY(), raider.getZ(), raider.getBoundingBox().inflate(20.0D));
+
+            if (nearestHorse != null) {
+                raider.navigation.moveTo(nearestHorse, 1.0D);
+            }
+        }
+
+        public boolean canUse() {
+            WoodenHorse nearestHorse = raider.level.getNearestEntity(WoodenHorse.class, TargetingConditions.DEFAULT, this.raider, raider.getX(), raider.getY(), raider.getZ(), raider.getBoundingBox().inflate(20.0D));
+
+            return !raider.isPassenger() && !(raider instanceof WoodenHorse) && nearestHorse != null && isHorseNearby();
         }
     }
 }

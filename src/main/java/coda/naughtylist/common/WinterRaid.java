@@ -1,23 +1,10 @@
 package coda.naughtylist.common;
 
 import coda.naughtylist.NaughtyList;
-import coda.naughtylist.common.entity.util.WinterRaider;
+import coda.naughtylist.common.entity.WinterRaider;
 import coda.naughtylist.registry.NLEntities;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-import javax.annotation.Nullable;
-
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
@@ -38,19 +25,20 @@ import net.minecraft.world.BossEvent;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.SpawnGroupData;
-import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.IExtensibleEnum;
+
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class WinterRaid {
     private static final Component RAID_NAME_COMPONENT = Component.translatable("event.naughtylist.raid");
@@ -70,7 +58,7 @@ public class WinterRaid {
     private int naughtyLevel;
     private boolean active;
     private int groupsSpawned;
-    private final ServerBossEvent raidEvent = new ServerBossEvent(RAID_NAME_COMPONENT, BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.NOTCHED_10);
+    private final ServerBossEvent raidEvent = new ServerBossEvent(RAID_NAME_COMPONENT, BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.NOTCHED_10);
     private int postRaidTicks;
     private int raidCooldownTicks;
     private final RandomSource random = RandomSource.create();
@@ -461,7 +449,7 @@ public class WinterRaid {
                 }
 
                 this.joinRaid(i, raider, p_37756_, false);
-                if (raid$raidertype.entityType == NLEntities.NUTCRACKER.get()) {
+                if (raid$raidertype.entityType == NLEntities.WOODEN_HORSE.get()) {
                     WinterRaider raider1 = null;
                     if (i == this.getNumGroups(Difficulty.NORMAL)) {
                         raider1 = NLEntities.NUTCRACKER.get().create(this.level);
@@ -717,9 +705,9 @@ public class WinterRaid {
     }
 
     public enum RaiderType implements IExtensibleEnum {
-        GREEN_NUTCRACKER(NLEntities.NUTCRACKER.get(), new int[]{1, 1, 2, 2, 2, 3, 2, 4}),
+        GREEN_NUTCRACKER(NLEntities.NUTCRACKER_GENERAL.get(), new int[]{1, 1, 2, 2, 2, 3, 2, 4}),
         RED_NUTCRACKER(NLEntities.NUTCRACKER.get(), new int[]{1, 4, 3, 3, 4, 4, 4, 2}),
-        WOODEN_HORSE(NLEntities.NUTCRACKER.get(), new int[]{0, 1, 1, 2, 1, 2, 1, 3});
+        WOODEN_HORSE(NLEntities.WOODEN_HORSE.get(), new int[]{0, 1, 1, 2, 1, 2, 1, 3});
 
         static WinterRaid.RaiderType[] VALUES = values();
         final EntityType<? extends WinterRaider> entityType;
@@ -728,6 +716,10 @@ public class WinterRaid {
         RaiderType(EntityType<? extends WinterRaider> p_37821_, int[] p_37822_) {
             this.entityType = p_37821_;
             this.spawnsPerWaveBeforeBonus = p_37822_;
+        }
+
+        public static WinterRaid.RaiderType create(String name, EntityType<? extends Raider> typeIn, int[] waveCountsIn) {
+            throw new IllegalStateException("Enum not extended");
         }
 
         @Override
