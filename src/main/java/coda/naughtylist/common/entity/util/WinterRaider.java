@@ -1,8 +1,9 @@
-package coda.naughtylist.common.entity;
+package coda.naughtylist.common.entity.util;
 
 import coda.naughtylist.NaughtyList;
 import coda.naughtylist.common.WinterRaid;
 import coda.naughtylist.common.WinterRaidSavedData;
+import coda.naughtylist.common.entity.WoodenHorse;
 import coda.naughtylist.common.entity.util.goal.PathfindToWinterRaidGoal;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;

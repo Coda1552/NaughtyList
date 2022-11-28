@@ -1,5 +1,6 @@
 package coda.naughtylist.common.entity;
 
+import coda.naughtylist.common.entity.util.WinterRaider;
 import coda.naughtylist.registry.NLItems;
 import coda.naughtylist.registry.NLSounds;
 import net.minecraft.nbt.CompoundTag;

@@ -4,7 +4,7 @@ import coda.naughtylist.common.WinterRaid;
 import coda.naughtylist.common.WinterRaidSavedData;
 import coda.naughtylist.common.entity.Nutcracker;
 import coda.naughtylist.common.entity.NutcrackerGeneral;
-import coda.naughtylist.common.entity.WinterRaider;
+import coda.naughtylist.common.entity.util.WinterRaider;
 import coda.naughtylist.common.entity.WoodenHorse;
 import coda.naughtylist.registry.NLEntities;
 import coda.naughtylist.registry.NLItems;
