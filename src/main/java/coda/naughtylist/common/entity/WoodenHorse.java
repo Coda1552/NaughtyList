@@ -1,5 +1,6 @@
 package coda.naughtylist.common.entity;
 
+import coda.naughtylist.common.entity.util.WinterRaider;
 import coda.naughtylist.registry.NLEntities;
 import coda.naughtylist.registry.NLItems;
 import net.minecraft.nbt.CompoundTag;

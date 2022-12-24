@@ -1,7 +1,7 @@
 package coda.naughtylist.common;
 
 import coda.naughtylist.NaughtyList;
-import coda.naughtylist.common.entity.WinterRaider;
+import coda.naughtylist.common.entity.util.WinterRaider;
 import coda.naughtylist.registry.NLEntities;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
