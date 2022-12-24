@@ -13,15 +13,22 @@ import coda.naughtylist.registry.NLSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Stray;
 import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -40,6 +47,7 @@ public class NaughtyList {
         forgeBus.addListener(this::blockBroken);
         forgeBus.addListener(this::levelTick);
         forgeBus.addListener(this::addGoals);
+        forgeBus.addListener(this::dropSnowGlobe);
         bus.addListener(this::createAttributes);
 
         NLBlocks.BLOCKS.register(bus);
@@ -65,10 +73,21 @@ public class NaughtyList {
     }
 
     private void blockBroken(BlockEvent.BreakEvent e) {
-        if (e.getState().is(NLBlocks.SNOW_GLOBE.get()) && e.getLevel() instanceof ServerLevel level && e.getPlayer() instanceof ServerPlayer player && level.isVillage(e.getPos())) {
+        if (e.getState().is(NLBlocks.SNOW_GLOBE.get()) && e.getLevel() instanceof ServerLevel level && e.getPlayer() instanceof ServerPlayer player && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, player) == 0 && level.isVillage(e.getPos())) {
             WinterRaidSavedData raids = level.getDataStorage().computeIfAbsent(tag -> WinterRaidSavedData.load(level, tag), () -> new WinterRaidSavedData(level), WinterRaidSavedData.getFileId(level.dimensionTypeRegistration()));;
 
             raids.createOrExtendRaid(player);
+        }
+    }
+
+    // super awful way to do this but i'm being lazy rn
+    private void dropSnowGlobe(LivingDeathEvent e) {
+        if (e.getEntity() instanceof Stray stray && stray.getRandom().nextFloat() > 0.8F) {
+            ItemEntity item = EntityType.ITEM.create(stray.level);
+            item.moveTo(stray.position());
+            item.setItem(new ItemStack(NLItems.SNOW_GLOBE.get()));
+
+            stray.level.addFreshEntity(item);
         }
     }
 

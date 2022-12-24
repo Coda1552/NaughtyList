@@ -42,7 +42,7 @@ authors="Coda, Crydigo" #optional
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Which list are YOU on?'''
+Have you been naughty or nice?'''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.naughtylist]] #optional
     # the modid of the dependency
