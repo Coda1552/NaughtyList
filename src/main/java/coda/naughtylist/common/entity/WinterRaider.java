@@ -220,10 +220,15 @@ public abstract class WinterRaider extends PatrollingMonster {
 
         if (this.isPatrolLeader()) {
             this.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
-            this.setDropChance(EquipmentSlot.HEAD, 0.0F);
+            this.setDropChance(EquipmentSlot.HEAD, 2.0F);
         }
 
         return super.finalizeSpawn(p_37856_, p_37857_, p_37858_, p_37859_, p_37860_);
+    }
+
+    @Override
+    public boolean canBeLeader() {
+        return false;
     }
 
     public abstract SoundEvent getCelebrateSound();

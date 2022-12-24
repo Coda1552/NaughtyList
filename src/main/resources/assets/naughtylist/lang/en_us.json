@@ -10,6 +10,10 @@
   "item.naughtylist.nutcracker_spawn_egg": "Nutcracker Spawn Egg",
   "item.naughtylist.nutcracker_general_spawn_egg": "Nutcracker General Spawn Egg",
 
+  "block.naughtylist.snow_globe": "Snow Globe",
+
+  "naughtylist.tooltip.snow_globe": "Try smashing this in a village...",
+
   "entity.naughtylist.wooden_horse": "Rocking Horse",
   "entity.naughtylist.nutcracker": "Nutcracker",
   "entity.naughtylist.candy_cane": "Candy Cane",
